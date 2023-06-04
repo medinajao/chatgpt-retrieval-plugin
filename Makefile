@@ -2,13 +2,15 @@
 # make heroku-login
 # make heroku-push
 
-HEROKU_APP = <your app name> 
+build:
+	docker build -t ${MY_APP} .
 
-heroku-push:
-	docker buildx build --platform linux/amd64 -t ${HEROKU_APP} .
-	docker tag ${HEROKU_APP} registry.heroku.com/${HEROKU_APP}/web
-	docker push registry.heroku.com/${HEROKU_APP}/web
-	heroku container:release web -a ${HEROKU_APP}
-
-heroku-login:
-	heroku container:login
+run:
+	docker run -ti -e DATASTORE=pinecone \
+	-e BEARER_TOKEN=${BEARER_TOKEN} \
+	-e OPENAI_API_KEY=${OPENAI_API_KEY} \
+	-e PINECONE_API_KEY=${PINECONE_API_KEY} \
+	-e PINECONE_INDEX=${PINECONE_INDEX} \
+	-e PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT} \
+	--network="host" \
+	--name mychatgpt ${MY_APP}
